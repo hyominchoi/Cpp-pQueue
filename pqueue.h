@@ -35,6 +35,7 @@ using namespace std;
  * The elements are integers and the integer is assumed to represent
  * the priority (larger integer is higher priority).
  */
+template <typename  ElemType>
 class PQueue
 {
 public:
@@ -58,14 +59,6 @@ public:
     ~PQueue();
     
     
-    /*
-     * Member function: isEmpty
-     * Usage: if (pq.isEmpty()) . . .
-     * -------------------------------
-     * Returns true if this pqueue contains no elements.
-     */
-    bool isEmpty();
-    
     
     /*
      * Member function: size
@@ -75,6 +68,16 @@ public:
      */
     int size();
     
+    /*
+     * Member function: isEmpty
+     * Usage: if (pq.isEmpty()) . . .
+     * -------------------------------
+     * Returns true if this pqueue contains no elements.
+     */
+    bool isEmpty() {
+        return (this->size() != 0);
+    };
+    
     
     /*
      * Member function: enqueue
@@ -83,7 +86,7 @@ public:
      * Adds the specified element to this pqueue. No effort is made to
      * avoid duplicates.
      */
-    void enqueue(int newElem);
+    void enqueue(ElemType newElem);
     
     
     /*
@@ -93,7 +96,7 @@ public:
      * Removes the largest priority element from this pqueue and returns it.
      * If this pqueue is empty, this function raises an error.
      */
-    int dequeueMax();
+    ElemType dequeueMax();
     
     
     /*
@@ -143,11 +146,109 @@ private:
     // a precaution
     // DISALLOW_COPYING(PQueue)
     
-    /* This is the representation for the unsorted vector.
+    /* This is the representation for the heap.
      * You will need to update this as you change representations. */
-    vector<int> entries;
-    
+    vector<ElemType> entries;
+    void maxHeapify();
+    void bubbleUp();
+    int numElem;
+    void swap(int i, int j);
 };
+
+template <typename ElemType>
+PQueue<ElemType>::PQueue() {
+    numElem = 0;
+}
+
+template <typename ElemType>
+PQueue<ElemType>::~PQueue() {
+    
+}
+
+template <typename ElemType>
+int PQueue<ElemType>::size() {
+    return numElem;
+}
+
+template <typename ElemType>
+void PQueue<ElemType>::enqueue(ElemType newElem) {
+    entries.push_back(newElem);
+    numElem += 1;
+    bubbleUp();
+}
+
+template <typename ElemType>
+void PQueue<ElemType>::swap(int i, int j){
+    if (i >= numElem || j >= numElem ) {
+        cout << "ERROR: array size out of scope" << endl;
+        return;
+    }
+    ElemType temp = entries[i];
+    entries[i] = entries[j];
+    entries[j] = temp;
+    
+}
+
+template <typename ElemType>
+void PQueue<ElemType>::bubbleUp() {
+    int current = numElem - 1;
+    bool change = true;
+    while (current > 0 && change){
+        int max = (current -1) / 2 ;
+        if (entries[max] < entries[current]) {
+            swap(max, current);
+            cout << entries[max] << endl;
+            change = true;
+        }
+        else change = false;
+    }
+    
+}
+
+
+
+template <typename ElemType>
+ElemType PQueue<ElemType>::dequeueMax() {
+    
+    if (numElem == 0){
+        cout << " Error: no element in the queue " << endl;
+        return 0 ;
+    }
+    
+    ElemType maxElem = entries[0];
+    entries[0] = entries[numElem-1];
+    numElem -= 1;
+    maxHeapify();
+    return maxElem;
+    
+}
+
+template <typename ElemType>
+void PQueue<ElemType>::maxHeapify() {
+    int current = 0;
+    bool change = true;
+    while (change && current < numElem) {
+        int left = (current * 2 + 1);
+        int right = (current * 2 + 2);
+        int max = current;
+        if (left < numElem && entries[left] > entries[max]) {
+            max = left;
+        }
+        if (right < numElem && entries[right] > entries[max]) {
+            max = right;
+        }
+        
+        if (max != current) {
+            swap(max, current);
+            change = true;
+        }
+        
+        else change = false;
+        
+    }
+    
+    
+}
 
 
 #endif
