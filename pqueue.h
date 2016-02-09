@@ -75,7 +75,7 @@ public:
      * Returns true if this pqueue contains no elements.
      */
     bool isEmpty() {
-        return (this->size() != 0);
+        return (numElem == 0);
     };
     
     
